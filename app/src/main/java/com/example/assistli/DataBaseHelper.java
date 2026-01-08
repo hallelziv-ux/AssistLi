@@ -7,20 +7,22 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.util.ArrayList;
-
 public class DataBaseHelper extends SQLiteOpenHelper {
 
-
-    //Table number 1
     private static final String DATABASE_NAME = "assistli.db";
-    private static final int DATABASE_VERSION = 1;
+    // Increment version to 2 because we changed the table structure
+    private static final int DATABASE_VERSION = 2;
+
     private static final String TABLE_USERS = "users";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_USERNAME = "username";
     private static final String COLUMN_EMAIL = "email";
     private static final String COLUMN_PASSWORD = "password";
     private static final String COLUMN_PHONENUM = "phonenum";
+
+    private static final String COLUMN_GENDER = "gender";
+    private static final String COLUMN_BIRTHDATE = "birthdate";
+    private static final String COLUMN_IS_DISABLED = "is_disabled";
 
     public DataBaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -32,33 +34,43 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_USERNAME + " TEXT, "
                 + COLUMN_EMAIL + " TEXT, "
-                + COLUMN_PASSWORD + " TEXT" + ")";
+                + COLUMN_PASSWORD + " TEXT, "
+                + COLUMN_GENDER + " TEXT, "
+                + COLUMN_BIRTHDATE + " TEXT, "
+                + COLUMN_IS_DISABLED + " TEXT, "
+                + COLUMN_PHONENUM + " TEXT" + ")";
         db.execSQL(CREATE_USERS_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.w(DataBaseHelper.class.getName(),
-                "Upgrading database from version " + oldVersion + " to "
-                        + newVersion + ", which will destroy all old data");
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+        onCreate(db);
     }
 
-    public boolean registerUser(String username, String email, String password) {
+    public boolean registerUser(String username, String email, String password,
+                                String gender, String birthdate, String isDisabled) {
         SQLiteDatabase db = this.getWritableDatabase();
+
+        // Check if user exists
         Cursor cursor = db.rawQuery(
                 "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USERNAME + "=? OR " + COLUMN_EMAIL + "=?",
                 new String[]{username, email});
-        if (cursor.moveToFirst()) {
+
+        if (cursor.getCount() > 0) {
             cursor.close();
-            db.close();
             return false;
         }
         cursor.close();
+
         ContentValues values = new ContentValues();
         values.put(COLUMN_USERNAME, username);
         values.put(COLUMN_EMAIL, email);
         values.put(COLUMN_PASSWORD, password);
+        values.put(COLUMN_GENDER, gender);
+        values.put(COLUMN_BIRTHDATE, birthdate);
+        values.put(COLUMN_IS_DISABLED, isDisabled);
+
         long result = db.insert(TABLE_USERS, null, values);
         db.close();
         return result != -1;
