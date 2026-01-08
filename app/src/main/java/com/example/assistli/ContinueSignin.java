@@ -40,7 +40,6 @@ public class ContinueSignin extends AppCompatActivity {
             return insets;
         });
 
-        // Initialize Views
         birthdate = findViewById(R.id.birthdate_text);
         editMeters = findViewById(R.id.edit_text_Meters);
         btnPickFile = findViewById(R.id.btn_pick_file);
@@ -51,8 +50,6 @@ public class ContinueSignin extends AppCompatActivity {
         rbtnGenderF = findViewById(R.id.radio_button_female);
         rbtnGenderM = findViewById(R.id.radio_button_male);
 
-        // --- PRO TIP: Dynamic Visibility Logic ---
-        // Initially disable the details box until "Yes" is clicked
         editMeters.setEnabled(false);
         editMeters.setAlpha(0.5f);
 
@@ -64,9 +61,8 @@ public class ContinueSignin extends AppCompatActivity {
         rbtnDisableN.setOnClickListener(v -> {
             editMeters.setEnabled(false);
             editMeters.setAlpha(0.5f);
-            editMeters.setText(""); // Clear text if they change to "No"
+            editMeters.setText("");
         });
-        // ------------------------------------------
 
         ActivityResultLauncher<Intent> filePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -92,26 +88,20 @@ public class ContinueSignin extends AppCompatActivity {
             datePickerDialog.show();
         });
 
-        // Register Button Logic
         btnRegister.setOnClickListener(v -> {
-            // 1. Get data from the Intent (sent from OpenActivity)
             String username = getIntent().getStringExtra("USER_NAME");
             String email = getIntent().getStringExtra("USER_EMAIL");
             String password = getIntent().getStringExtra("USER_PASS");
-
-            // 2. Get data from this screen
             String gender = rbtnGenderM.isChecked() ? "Male" : "Female";
             String disabled = rbtnDisableY.isChecked() ? "Yes" : "No";
             String dob = birthdate.getText().toString();
             String details = editMeters.getText().toString();
 
-            // 3. Simple Validation
             if (dob.isEmpty()) {
                 Toast.makeText(this, "Please enter birthdate", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // 4. Save to Database
             boolean isInserted = dbHelper.registerUser(username, email, password, gender, dob, disabled);
 
             if (isInserted) {
@@ -124,7 +114,6 @@ public class ContinueSignin extends AppCompatActivity {
             }
         });
 
-        // File picker listeners...
         btnPickFile.setOnClickListener(v -> openFilePicker(filePickerLauncher));
         btnPickPic.setOnClickListener(v -> openFilePicker(filePickerLauncher));
     }

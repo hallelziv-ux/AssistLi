@@ -51,8 +51,6 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public boolean registerUser(String username, String email, String password,
                                 String gender, String birthdate, String isDisabled) {
         SQLiteDatabase db = this.getWritableDatabase();
-
-        // Check if user exists
         Cursor cursor = db.rawQuery(
                 "SELECT * FROM " + TABLE_USERS + " WHERE " + COLUMN_USERNAME + "=? OR " + COLUMN_EMAIL + "=?",
                 new String[]{username, email});

@@ -37,10 +37,7 @@ public class OpenActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
         dbHelper = new DataBaseHelper(this);
-
-        // Show login dialog after a short delay
         handler.postDelayed(this::createLoginDialog, 1500);
     }
 
@@ -76,8 +73,6 @@ public class OpenActivity extends AppCompatActivity {
                 showMessage("Invalid phone number (must be 10 digits starting with 0)");
                 return;
             }
-
-            // Instead of registering here, pass data to ContinueSignin
             Intent intent = new Intent(OpenActivity.this, ContinueSignin.class);
             intent.putExtra("USER_NAME", username);
             intent.putExtra("USER_EMAIL", email);
